@@ -13,7 +13,7 @@ import java.util.*;
 @Service
 public class EmployeeService {
 
-    Map<String, Employee> employees = new HashMap<>(Map.of(
+   private final Map<String, Employee> employees = new HashMap<>(Map.of(
             getEmployeeKey("Данил", "Багирян"),
             new Employee("Данил", "Багирян",55000,2),
             getEmployeeKey("Яна", "Валуйская"),
@@ -35,7 +35,7 @@ public class EmployeeService {
     )
     );
 
-    private final int employeesCapacity = 14;
+    private static final int employeesCapacity = 14;
 
     private String getEmployeeKey(String firstName, String lastName) {
         String fullName = StringUtils.replace(firstName + lastName, " ", "");
@@ -98,8 +98,7 @@ public class EmployeeService {
     }
 
     public Collection<Employee> getEmployees() {
-        return Collections.unmodifiableCollection(employees.values());
+        return new ArrayList<>(employees.values());
     }
-
 
 }

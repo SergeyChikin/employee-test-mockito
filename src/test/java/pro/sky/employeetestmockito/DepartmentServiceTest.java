@@ -16,9 +16,7 @@ import pro.sky.employeetestmockito.model.Employee;
 import pro.sky.employeetestmockito.service.DepartmentService;
 import pro.sky.employeetestmockito.service.EmployeeService;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Stream;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,10 +28,24 @@ public class DepartmentServiceTest {
     @InjectMocks
     private DepartmentService departmentService;
 
+    @BeforeEach
+    public void beforeEach() {
+        Mockito.when(employeeService.getEmployees()).thenReturn(
+                List.of(
+                new Employee("Юлия", "Коряковцева",70000,1),
+                new Employee("Екатерина", "Перещук",72000,1),
+                new Employee("Данил", "Багирян",55000,2),
+                new Employee("Егор", "Орехов",62000,2),
+                new Employee("Любовь", "Дятлова",64000,3)
+                )
+        );
+    }
+
+
     public static Stream<Arguments> maxSalaryFromDepParams() {
         return Stream.of(
                 Arguments.of(1,72_000 ),
-                Arguments.of(2, 57_000),
+                Arguments.of(2, 62_000),
                 Arguments.of(3, 64_000)
         );
     }
@@ -42,16 +54,16 @@ public class DepartmentServiceTest {
         return Stream.of(
                 Arguments.of(1, 70_000),
                 Arguments.of(2, 55_000),
-                Arguments.of(3, 62_000)
+                Arguments.of(3, 64_000)
         );
     }
 
     public static Stream<Arguments> sumSalaryFromDepTestParams() {
         return Stream.of(
                 Arguments.of(1, 142_000),
-                Arguments.of(2, 112_000),
-                Arguments.of(3, 126_000),
-                Arguments.of(6, 0)
+                Arguments.of(2, 117_000),
+                Arguments.of(3, 64_000),
+                Arguments.of(4, 0)
         );
     }
 
@@ -68,18 +80,17 @@ public class DepartmentServiceTest {
                         2,
                         List.of(
                                 new Employee("Данил", "Багирян",55000,2),
-                                new Employee("Василий", "Гудков",57000,2)
+                                new Employee("Егор", "Орехов",62000,2)
                         )
                 ),
                 Arguments.of(
                         3,
                         List.of(
-                        new Employee("Любовь", "Дятлова",64000,3),
-                        new Employee("Егор", "Орехов",62000,3)
+                        new Employee("Любовь", "Дятлова",64000,3)
                         )
                 ),
                 Arguments.of(
-                        6,
+                        4,
                         Collections.emptyList()
                 )
         );
@@ -107,7 +118,7 @@ public class DepartmentServiceTest {
     @Test
     public void minSalaryFromDepIfNotFoundTest() {
         Assertions.assertThatExceptionOfType(DepartmentNotFoundException.class)
-                .isThrownBy(() -> departmentService.getMinSalaryInDepartment(6));
+                .isThrownBy(() -> departmentService.getMinSalaryInDepartment(4));
     }
 
     @ParameterizedTest
@@ -134,21 +145,11 @@ public class DepartmentServiceTest {
                 ),
                 2,
                 List.of(
-                        new Employee("Василий", "Гудков",57000,2),
-                        new Employee("Данил", "Багирян",55000,2)
+                        new Employee("Данил", "Багирян",55000,2),
+                        new Employee("Егор", "Орехов",62000,2)
                 ),
                 3,
-                List.of(
-                        new Employee("Любовь", "Дятлова",64000,3),
-                        new Employee("Егор", "Орехов",62000,3)
-                ),
-                4,
-                List.of(
-                        new Employee("Яна", "Валуйская",48000,4),
-                        new Employee("Александр", "Жердев",52000,4)
-                ),
-                5,
-                Collections.singletonList(new Employee("Михаил", "Низовский",47000,5))
+                Collections.singletonList(new Employee("Любовь", "Дятлова",64000,3))
         );
         Assertions.assertThat(departmentService.showAllEmployeesByDepartments())
                 .containsExactlyInAnyOrderEntriesOf(expected);

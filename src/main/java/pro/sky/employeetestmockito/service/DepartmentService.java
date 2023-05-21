@@ -9,44 +9,45 @@ import java.util.stream.Collectors;
 
 
 @Service
-public class DepartmentService extends EmployeeService{
+public class DepartmentService {
+
+    private final EmployeeService employeeService;
+
+    public DepartmentService(EmployeeService employeeService) {
+        this.employeeService = employeeService;
+    }
 
     public List<Employee> showEmployeesInDepartment(int department) {
-        return  Collections.unmodifiableCollection(employees.values()).stream()
+        return  employeeService.getEmployees().stream()
                 .filter(e -> e.getDepartment() == department)
                 .collect(Collectors.toList());
     }
 
     public double getSumSalaryInDepartment(int department) {
-        return Collections.unmodifiableCollection(employees.values()).stream()
+        return employeeService.getEmployees().stream()
                 .filter(e -> e.getDepartment() == department)
-                .mapToInt(Employee -> (int) Employee.getSalary()).sum();
+                .mapToDouble(Employee -> Employee.getSalary()).sum();
 
     }
 
     public double getMaxSalaryInDepartment(int department) {
-        return Collections.unmodifiableCollection(employees.values()).stream()
+        return employeeService.getEmployees().stream()
                 .filter(e -> e.getDepartment() == department)
-                .mapToInt(Employee -> (int) Employee.getSalary()).max()
+                .mapToDouble(Employee -> Employee.getSalary())
+                .max()
                 .orElseThrow(DepartmentNotFoundException::new);
     }
 
     public double getMinSalaryInDepartment(int department) {
-        return Collections.unmodifiableCollection(employees.values()).stream()
+        return employeeService.getEmployees().stream()
                 .filter(e -> e.getDepartment() == department)
-                .mapToInt(Employee -> (int) Employee.getSalary()).min()
+                .mapToDouble(Employee -> Employee.getSalary())
+                .min()
                 .orElseThrow(DepartmentNotFoundException::new);
     }
 
     public Map<Integer, List<Employee>> showAllEmployeesByDepartments() {
-        HashMap<Integer, List<Employee>> map = new HashMap<>();
-        List<Employee> employeeList = employees.values().stream().toList();
-        for( Employee emp : employeeList){
-            if (!map.containsKey(emp.getDepartment())){
-                map.put(emp.getDepartment(), new ArrayList<>());
-            }
-            map.get(emp.getDepartment()).add(emp);
-        }
-        return map;
+        return employeeService.getEmployees().stream()
+                .collect(Collectors.groupingBy(Employee::getDepartment));
     }
 }
